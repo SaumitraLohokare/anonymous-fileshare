@@ -13,3 +13,7 @@ Call `npm start`
 - Click 'Upload File' to upload to server
 
 - You can download this file on any device using the link provided.
+
+## Screenshot:
+
+<img src="https://github.com/SaumitraLohokare/anonymous-fileshare/blob/main/images/ss.png" width="900">
