@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import './App.css';
+import ConnectionStatus from './ConnectionStatus';
+import DownloadLink from './DownloadLink';
+import gofile from './gofile-small.png';
 
 function App() {
 
   let [server, setServer] = useState('');
   let [downloadLink, setDownloadLink] = useState('');
   let [fileList, setFileList] = useState<FileList>();
+  let [folderId, setFolderId] = useState('');
+  let [guestToken, setGuestToken] = useState('');
 
   /// GOFILE STUFF
 
@@ -28,6 +33,10 @@ function App() {
 
     let data = new FormData();
     data.append('file', fileList[0], fileList[0].name);
+    if (folderId !== '') {
+      data.append('folderId', folderId);
+      data.append('token', guestToken);
+    }
 
     await fetch(`https://${server}.gofile.io/uploadFile`, {
       method: 'POST',
@@ -36,18 +45,19 @@ function App() {
     .then(response => response.json())
     .then(async response => {
       setDownloadLink(response.data.downloadPage);
-
-      let folderId = response.data.parentFolder;
-      let guestToken = response.data.guestToken;
+      let _folderId = response.data.parentFolder;
+      let _guestToken = response.data.guestToken;
+      if (!folderId || folderId === '') setFolderId(response.data.parentFolder);
+      if (!guestToken || guestToken === '') setGuestToken(response.data.guestToken);
       console.log(response);
       
       for (let i = 1; i < fileList!.length; i++) {
         data = new FormData();
         let file = fileList!.item(i);
-        if (file && folderId !== '') {
+        if (file && _folderId !== '') {
           data.append('file', file, file.name);
-          data.append('token', guestToken);
-          data.append('folderId', folderId);
+          data.append('token', _guestToken);
+          data.append('folderId', _folderId);
 
           await fetch(`https://${server}.gofile.io/uploadFile`, {
               method: 'POST',
@@ -70,22 +80,35 @@ function App() {
 
   // TODO: Add drag and drop for files.
   const setFile = (target: HTMLInputElement) => {
-    if (target.files) setFileList(target.files);
+    if (target.files) {
+      setFileList(target.files);
+    }
   }
 
-  // TODO: Make good UI.
   return (
     <div className="App">
       <header className="App-header">
-        <span>Server is {server}!</span>
-        <br />
-        <br />
-        <input type="file" name="uploadFile" id="uploadFile" multiple={true} onChange={(e) => setFile((e.target as HTMLInputElement))}/>
-        <button onClick={uploadFiles}>Upload File</button>
-        <br />
-        <br />
-        <span>File uploaded can be downloaded at <a href={downloadLink} target="_blank" rel="noreferrer">{downloadLink}</a></span>
+        <span className="logo"><span className="green-text">Ez</span>Share</span>        
+        <ConnectionStatus isConnected={server !== ''} />
       </header>
+        <main className="main-content">
+          <DownloadLink downloadLink={downloadLink}/>
+          <div className="drag-container">
+            <div className="drag-container-inner">
+              <span className="drag-text">Drag and Drop files to upload</span>
+              <span className="browse-text">or 
+                <input type="file" name="uploadFile" id="uploadFile" multiple={true} 
+                  onChange={(e) => setFile((e.target as HTMLInputElement))} />
+              </span>
+              <button className="upload-button" onClick={uploadFiles}>Upload</button>
+            </div>
+          </div>
+        </main>
+
+        <footer>
+          <span className="footer">Powered by GoFile</span>
+          <img src={gofile} alt="gofile-logo" />
+        </footer>
     </div>
   );
 }
