@@ -1,0 +1,44 @@
+.connection-status {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px;
+    gap: 5px;
+
+    width: fit-content;
+    height: 30px;
+    
+    background: #4B8673;
+    color: #F6FBF4;
+    border-radius: 5px;
+
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 36px;
+}
+
+.circle {
+    box-sizing: border-box;
+
+    width: 10px;
+    height: 10px;
+
+    border: 1px solid #F6FBF4;
+    border-radius: 50%;
+
+    /* Inside auto layout */
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.connected {
+    background: #89E35F;
+}
+
+.not-connected {
+    background: #E35F5F;
+}
